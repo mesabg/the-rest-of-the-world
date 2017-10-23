@@ -3,6 +3,7 @@
  */
 const $ = require('jquery');
 const Mustache = require('mustache');
+const tilt = require('tilt.js');
 
 $(document).ready(function($){
     //-- Render
@@ -12,5 +13,5 @@ $(document).ready(function($){
     $('app').html(rendered);
 
     //-- Start render process
-    require('./render')($);
+    require('./render')($);    
 });

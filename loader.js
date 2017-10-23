@@ -5,6 +5,7 @@ const scripts = [
     "./node_modules\\jquery\\dist\\jquery.min.js",
     "./src\\assets\\js\\jquery.foggy.min.js",
     "./node_modules\\tether\\dist\\js\\tether.min.js",
+    "./node_modules\\tilt.js\\src\\tilt.jquery.js",
     "./node_modules\\bootstrap\\dist\\js\\bootstrap.min.js"
 ];
 

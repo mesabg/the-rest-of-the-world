@@ -2,7 +2,7 @@
  * Description
  */
 require('jquery.transit');
-
+require('tilt.js');
 
 /**
  * Rendering and events process
@@ -15,10 +15,29 @@ module.exports = function($){
     let blurFactor = 1.8;
     let whileScroll = false;
     let time = null;
+    let final;
+
+    //-- Start parallax
+    $('.page').tilt({
+        perspective: 1000,
+        easing: "cubic-bezier(.03,.98,.52,.99)",
+        maxTilt: 20,
+        speed: 300,
+        transition: true
+    });
 
     window.addEventListener('wheel', function(e){
-        if (e.deltaY < 0) {scroll += factor; blur -= blurFactor;}
-        if (e.deltaY > 0) {scroll -= factor; blur += blurFactor;}
+        if (e.deltaY < 0) {
+            scroll += factor; 
+            blur -= blurFactor;
+            final = '-=0.5';
+        }
+
+        if (e.deltaY > 0) {
+            scroll -= factor; 
+            blur += blurFactor;
+            final = '+=0.5';
+        }
 
         //console.log(time);
 
@@ -62,11 +81,25 @@ module.exports = function($){
         }
 
         $('#definition').css({
-            perspective: '500px', 
-            transform: `perspective(50px) translate3d(0px, 0px, ${scroll}px)` 
+            transform: `
+                perspective(50px),
+                translate3d(0px, 0px, ${scroll}px)
+            ` 
         }).find('div > span').css({
             color: 'transparent',
             textShadow: `0 0 ${blur}px white`
         });
+    });
+
+   
+
+    window.addEventListener('mousemove', function(event){
+        let coords = {
+            x: event.clientX,
+            y: event.clientY
+        };
+
+
+        //console.log('Mouse is moving :: ', coords);
     });
 }
