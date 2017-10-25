@@ -19,10 +19,10 @@ module.exports = function($){
 
     //-- Start parallax
     $('.page').tilt({
-        perspective: 1000,
+        perspective: 1800,
         easing: "cubic-bezier(.03,.98,.52,.99)",
         maxTilt: 20,
-        speed: 300,
+        speed: 2500,
         transition: true
     });
 
