@@ -442,8 +442,10 @@ function wheel(){
             $(pagesMobile.get(actual - 1)).animate({ opacity: 1 }, 350);
 
             //-- Change BG color
-            $('body').attr('class', '');
-            $('body').addClass(`color-${actual}`);
+            if (window.innerWidth < 768){
+                $('body').attr('class', '');
+                $('body').addClass(`color-${actual}`);
+            }
 
             //-- Change BG Color on hover if applies
             if (actual === 3){

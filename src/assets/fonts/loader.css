@@ -1,20 +1,7 @@
-@font-face {
-    font-family: 'Gilroy-ExtraBold';
-    font-weight: 400;
-    src: url("Gilroy-ExtraBold.otf") format("opentype");
-}
 
-@font-face {
-    font-family: 'Gilroy-Light';
-    font-weight: 400;
-    src: url("Gilroy-Light.otf") format("opentype");
-}
-
-@font-face {
-    font-family: 'Gilroy-Regular';
-    font-weight: 400;
-    src: url("Gilroy-Regular.otf") format("opentype");
-}
+@import 'Gilroy-ExtraBold/fonts.css'; 
+@import 'Gilroy-Light/fonts.css'; 
+@import 'Gilroy-Regular/fonts.css'; 
 
 [extra-bold]{
     font-family: 'Gilroy-ExtraBold';

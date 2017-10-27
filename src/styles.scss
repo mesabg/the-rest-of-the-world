@@ -244,6 +244,16 @@ body{
                 }
             }
 
+
+            
+                .redirect{ 
+                    font-size: 2rem; 
+                    @media (max-width: 768px){
+                        font-size: 1rem !important;
+                    }
+                }
+            
+
         }
 
         & > div:nth-child(1) { 
@@ -301,16 +311,30 @@ body{
                 transition: all 0.5s ease-in-out;
                 transform: translateY(-50%);
 
-                span{ font-size: 2rem; }
+                span{ 
+                    font-size: 2rem; 
+
+                    @media (max-width: 768px){
+                        font-size: 1rem !important;
+                    }
+                }
             }
 
             & > div:nth-child(1){
                 padding-right: 8rem;
+
+                @media (max-width: 768px){
+                    padding-right: 15px;
+                }
             }
 
             & > div:nth-child(2){
                 right: 0;
                 padding-left: 8rem;
+
+                @media (max-width: 768px){
+                    padding-left: 15px;
+                }
             }
 
             & > div:hover{
