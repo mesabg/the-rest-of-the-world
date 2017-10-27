@@ -1,16 +1,18 @@
 /**
  * Global dependencies
  */
-const $ = require('jquery');
-const Mustache = require('mustache');
-const tilt = require('tilt.js');
+window.$ = require('jquery');
+const fs = require('fs');
 
 $(document).ready(function($){
-    //-- Render
-    let template = require('./views/prelanding.html');
-    let data = require('./views/prelanding.json');
-    let rendered = Mustache.render(template, data);
-    $('app').html(rendered);
+    //-- Bind icons
+    $('#mouse > img')
+        .attr('src', require('file-loader!./assets/images/mouse.gif'))
+        .attr('alt', 'Mouse');
+
+    $('#timer > img')
+        .attr('src', 'file-loader!./assets/images/timer.gif')
+        .attr('alt', 'Timer');
 
     //-- Start render process
     require('./render')($);    

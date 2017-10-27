@@ -1,7 +1,8 @@
 /**
  * Description
  */
-const $ = require('jquery');
+window.$ = require('jquery');
+const d3 = require('d3-interpolate');
 require('jquery.transit');
 require('tilt.js');
 
@@ -55,80 +56,274 @@ function abs(number){
 
 
 (function($){
-    $.fn.animation = function (
-        x = {
+    $.fn.customAnimation = function (values = {
+        initial: 0, /* Initial value of interpotaltion */
+        final: 0 /* Final value after interpolation */
+    }, options = {
+        start: function(){ /*Animation start*/ },
+        step: function(value) { /*Interpolation value*/ },
+        easing: 'linear', /*Interpolation function*/
+        end: function(){ /*Animation ends*/ },
+        duration: 400 /*Duration time ms*/ 
+    }){
+
+        values = {
+            initial: values.initial === undefined || values.initial === null ? 0 : values.initial,
+            final: values.final === undefined || values.final === null ? 0 : values.final
+        };
+
+        options = {
+            start: options.start === undefined || options.start === null ? function(){} : options.start,
+            step: options.step === undefined || options.step === null ? function(){} : options.step,
+            easing: options.easing === undefined || options.easing === null ? 'linear' : options.easing,
+            end: options.end === undefined || options.end === null ? function(){} : options.end,
+            duration: options.duration === undefined || options.duration === null ? 400 : options.duration
+        };
+
+        //-- Integrity Check
+        Object.keys(options).forEach(function(key, index){
+            console.log(key);
+            switch(key){
+                case 'start':
+                    if ( !( typeof options.start === 'function' ) )
+                        throw new Error('Property "start" is not a valid function');
+                    break;
+                case 'step':
+                    if ( !( typeof options.step === 'function' ) )
+                        throw new Error('Property "step" is not a valid function');
+                    break; 
+                case 'easing':
+                    if ( !( typeof options.easing === 'string' ) )
+                        throw new Error('Property "easing" is not a valid string');
+                    if ( !(options.easing === 'linear') && 
+                            !(options.easing === 'ease-in') &&
+                            !(options.easing === 'ease-in-out') )
+                        throw new Error('Property "easing" is not valid');
+                    break; 
+                case 'end':
+                    if ( !( typeof options.end === 'function' ) )
+                        throw new Error('Property "end" is not a valid function');
+                    break; 
+                case 'duration':
+                    if ( !( typeof options.duration === 'number') )
+                        throw new Error('Property "duration" is not a valid number');
+                    break; 
+                default:
+                    throw new Error(`Property "${key}" is not expected`);
+            };
+        });
+
+
+        //-- Easing functions
+        const linear = function(t) { return t; }
+        const easeIn = function(t) { return t * t; }
+        const easeInOut = function(t) { return t * t * t * t; }
+
+        const easing = function (type, t){
+            switch(type){
+                case 'linear': return linear(t);
+                case 'ease-in': return easeIn(t);
+                case 'ease-in-out': return easeInOut(t);
+            }
+        }
+
+
+        //-- Start animation process
+        let startTime, time;
+        let duration = options.duration;
+        let startX = values.initial, endX = values.final;
+        
+        const run = function() {
+            time = new Date().getTime() - startTime;
+            time = time / duration;
+            if(time <1) requestAnimationFrame(run);
+            time = easing(options.easing, time);
+            options.step(time);
+        }
+        
+        startTime = new Date().getTime();
+        options.start();
+        run();
+    }
+
+
+    $.fn.customTransform = function(scroll, blur){
+        $(this).css({
+            transform: `
+                perspective(50px),
+                translate3d(0px, 0px, ${scroll}px)
+            ` 
+        }).find('div > span').css({
+            color: 'transparent',
+            textShadow: `0 0 ${blur}px white`
+        });
+    }
+
+    $.fn.specialAnimation = function (
+        scroll = {
+            from: 0,
+            to: 0
+        },
+        blur = {
+            from: 0,
+            to: 0
+        }
+    ){
+
+        return new Promise((resolve, reject) => {
+            let scrollInter = d3.interpolateNumber(scroll.from, scroll.to);
+            let blurInter = d3.interpolateNumber(blur.from, blur.to);
+    
+            //-- Start animation process
+            let startTime, time;
+            let duration = 700;
+            let startX = 0, endX = 400;
+            let $self = $(this);
+            
+            const run = function() {
+                time = new Date().getTime() - startTime;
+                time = time / duration;
+                if(time <1) requestAnimationFrame(run);
+                else if (time > 1) time = 1.0;
+                time = time * time * 2;
+                
+                //-- Animation
+                $self.customTransform(scrollInter(time), blurInter(time));
+            }
+            
+            startTime = new Date().getTime();
+            run();
+            resolve();
+        });
+    }
+
+
+    /*$.fn.animation = function (
+        scroll = {
             initial: 0,
             final: 0
         }, 
-        y = {
+        blur = {
             initial: 0,
             final: 0,
-        }, duration ){
+        }, 
+        duration = 500,
+        easing = 'swing' ){
         return new Promise((resolve, reject) => {
+            //console.log("In animation :: ", { scroll: scroll, blur: blur });
             let $element = $(this);
             $({ 
-                x: x.initial, 
-                y: y.initial 
+                x: scroll.initial, 
+                y: blur.initial 
             })
             .stop()
             .animate({
-                x: x.final,
-                y: y.final 
+                x: scroll.final,
+                y: blur.final 
             }, {
                 duration: duration,
+                easing: easing,
                 step: function(value, init){
-                    if (init.prop == 'x'){ translateZTransition($element, value); }
-                    else if (init.prop == 'y'){ blurTransition($element, value); }
+                    console.log("Step :: ", init.prop, value);
+                    if (init.prop == 'x'){ translateZTransition($element, 0); }
+                    else if (init.prop == 'y'){ blurTransition($element, 0); }
                 },
                 done: function (){
-                    console.log("Yo la defined", { x: x, y: y });
-                    resolve({ x: x, y: y });
+                    resolve({ scroll: scroll, blur: blur });
                 },
                 fail: function(){
                     reject();
                 }
             });
         });
-    }
+    }*/
 
 
     $.fn.animationGoAndBack = function (
-        x = {
+        scroll = {
             initial: 0,
+            middle: 0,
             final: 0
         }, 
-        y = {
+        blur = {
             initial: 0,
-            final: 0,
-        }, duration ){
+            middle: 0,
+            final: 0
+        }, 
+        duration = 500,
+        easing = 'swing' ){
 
         return new Promise((resolve, reject) => {
-            $(this).animation(x, y, duration)
-            .then(function (response) {
+            //-- From initial to middle
+            /*$(this).animation(
+            {
+                inital: scroll.initial,
+                final: scroll.middle
+            },
+            {
+                inital: blur.initial,
+                final: blur.middle
+            }, duration, easing)
+            .then(function (params) {
                 return $(this).animation({
-                    initial: x.final,
-                    final: x.initial
+                    initial: scroll.middle,
+                    final: scroll.final
                 }, {
-                    initial: y.final,
-                    final: y.initial
-                }, duration);
+                    initial: blur.middle,
+                    final: blur.final
+                }, duration, easing);
             })
             .then(function (params) {
-                console.log("Here we are ", params);
                 resolve({
                     scroll: {
-                        initial: params.x.final,
-                        final: params.x.initial
+                        initial: scroll.initial,
+                        final: scroll.final
                     },
                     blur: {
-                        initial: params.y.final,
-                        final: params.y.initial
+                        initial: blur.initial,
+                        final: blur.final
                     }
                 });
             })
             .catch(() => {
                 reject();
-            });
+            });*/
+
+
+            $(this).specialAnimation(
+                {
+                    from: scroll.initial,
+                    to: scroll.middle
+                },
+                {
+                    from: blur.initial,
+                    to: blur.middle
+                })
+                .then(function (params) {
+                    return $(this).animation({
+                        from: scroll.middle,
+                        to: scroll.final
+                    }, {
+                        from: blur.middle,
+                        to: blur.final
+                    });
+                })
+                .then(function (params) {
+                    resolve({
+                        scroll: {
+                            initial: scroll.initial,
+                            final: scroll.final
+                        },
+                        blur: {
+                            initial: blur.initial,
+                            final: blur.final
+                        }
+                    });
+                })
+                .catch(() => {
+                    reject();
+                });
+            
         });
     }
 }($));
@@ -145,18 +340,22 @@ function wheel(){
     let blur = 0;
     let blurFactor = 1.8;
     let scrollNumber = 0;
+    let color = ['#832925', '#BC684F', '#9A615D', '#E2AAA5', '#E2A882', '#3A1D15'];
 
     //-- Pages
     let pages = $('.content').children();
     let actual = 1;
     let whileScroll = true;
-    let checkScrollAfter = 100;
+    let checkScrollAfter = 150;
     let direction = 'up';
     let savedDirection = 'up';
     let savedStep = 0;
     let steps = 0;
     let onReset = false;
     let animationActive = false;
+    let jumpFactor = 1.5; //-- Times middle animation is triggered
+    let topScroll = 0; //-- Base case
+    let topBlur = 0; //-- Base case
 
     window.addEventListener('wheel', function(e){
 
@@ -184,43 +383,65 @@ function wheel(){
             onReset = true;
         }
 
+        console.log("Scroll ", scrollNumber);
+
+        //-- Transition if it is possible
+        if (!animationActive)
+            transform(pages.slice(0, actual), scroll, blur);
+
         //-- Check movement steps 
         if (whileScroll){
             whileScroll = false;
-            savedDirection = direction;
-            savedStep = scrollNumber;
 
-            setTimeout(function(){
-                
-                let size = 0;
-                if (savedDirection == 'up' && !animationActive){
-                    size = abs(savedStep - scrollNumber + 1);
+            setTimeout(function(lastDirection){
+
+                //-- Up direction
+                if (lastDirection == 'up' && !animationActive){
                     animationActive = true;
 
-                    let x = { 
-                        inital: scroll,
-                        final: scroll - scrollFactor * size 
+                    let scrollAnimationStates = { 
+                        initial: scroll,
+                        final: topScroll
                     };
 
-                    let y = {
+                    let blurAnimationStates = {
                         initial: blur,
-                        final: blur + blurFactor * size 
+                        final: topBlur
                     };
 
-                    console.log(x, y);
+                    if ( scrollNumber >= 3 ){
+                        //-- Jump to the next page
+                        topScroll = -scrollFactor * 40;
+                        topBlur = blurFactor * 20;
+                        scrollAnimationStates.final = topScroll;
+                        blurAnimationStates.final = topBlur;
+                    
+                        //-- New page arrive animation
+                        actual++;
+                        $(pages.get(actual - 1)).animate({ opacity: 1}, 700);
+                        $('body').attr('class', '');
+                        $('body').addClass(`color-${actual === 7 ? 6 : actual}`);
+                    }
 
-                    pages.slice(0, actual)
-                    .animationGoAndBack(x, y, 500)
-                    .then(function (params) {
-                        animationActive = false;
-                        console.log(params);
-                        scroll = params.scroll.initial;
-                        blur = params.blur.initial;
+                    Array.from(pages.slice(0, actual)).forEach((value, index) => {
+                        $(this).specialAnimation({
+                            from: scrollAnimationStates.initial,
+                            to: scrollAnimationStates.final
+                        },{
+                            from: blurAnimationStates.initial,
+                            to: blurAnimationStates.final
+                        }).then(function (params) {
+                            //-- Enable wheel movement again and positions righly set to the last step
+                            animationActive = false;
+                            whileScroll = true;
+                            scrollNumber = 0;
+                            scroll = topScroll;
+                            blur = topBlur;
+                        });
                     });
 
-                }else if (savedDirection == 'down' && !animationActive){
-                    size = savedStep - scrollNumber + 1;
-                    animate(
+                }else if (lastDirection == 'down' && !animationActive){
+                    /*animate(
                         pages.slice(0, actual), 
                         {
                             initial: scroll,
@@ -236,16 +457,12 @@ function wheel(){
                         }).catch((error) => {
                             //-- Show error
                             console.log("An error ocurred :: ", error);
-                        });
+                        });*/
                 }
-
-                whileScroll = true;
-
-            }, checkScrollAfter);
+            }, checkScrollAfter, direction);
         }
 
-        if (!animationActive)
-            transform(pages.slice(0, actual), scroll, blur);
+        
     });
 }
 

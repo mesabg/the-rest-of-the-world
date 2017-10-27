@@ -59,6 +59,12 @@ module.exports = {
                     /\/node_modules\//
                 ],
                 "loaders": [
+                    {
+                        loader: 'babel-loader',
+                        query: {
+                          presets: ['es2015']
+                        }
+                    },
                     "source-map-loader"
                 ]
             },

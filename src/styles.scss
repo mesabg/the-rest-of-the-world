@@ -9,8 +9,29 @@
 
 body{
     margin: 0px;
-    background-color: #832925!important;
+    -webkit-transition: all 1.2s ease-in-out;
+    -moz-transition: all 1.2s ease-in-out;
+    -o-transition: all 1.2s ease-in-out;
+    -ms-transition: all 1.2s ease-in-out;
+    transition: all 1.2s ease-in-out;
 }
+
+.color-1{ background-color: #832925 !important; }
+.color-2{ background-color: #BC684F !important; }
+.color-3{ background-color: #9A615D !important; }
+.color-4{ background-color: #E2AAA5 !important; }
+.color-5{ background-color: #E2A882 !important; }
+.color-6{ background-color: #3A1D15 !important; }
+
+
+.icon{
+    position: absolute;
+    height: 100vh;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
 
 .page{
     position: absolute;
