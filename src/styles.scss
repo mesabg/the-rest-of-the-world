@@ -19,17 +19,51 @@ body{
 .color-1{ background-color: #832925 !important; }
 .color-2{ background-color: #BC684F !important; }
 .color-3{ background-color: #9A615D !important; }
-.color-4{ background-color: #E2AAA5 !important; }
-.color-5{ background-color: #E2A882 !important; }
-.color-6{ background-color: #3A1D15 !important; }
+.color-4{ background-color: #3A1D15 !important; }
 
+.color-e-1{ background-color: #E2AAA5 !important; }
+.color-e-2{ background-color: #E2A882 !important; }
 
 .icon{
-    position: absolute;
+    position: fixed;
     height: 100vh;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    width: 100vw;
+    z-index: -1;
+
+    & > .content{
+        position: absolute;
+        bottom: 2.5rem;
+        left: 50%;
+        right: 0;
+        display: inline-grid;
+        overflow: initial;
+
+        & > span {
+            font-size: 1rem;
+            margin-left: -7px;
+            margin-bottom: 7px;        
+        }
+    }
+}
+
+
+#timer{
+    opacity: 0;
+    & >.content{
+        & > img {
+            margin-left: -14px;
+        }
+    }
+}
+
+
+#pick{
+    opacity: 0;
+    & >.content{
+        & > span {
+            margin-left: -22px;
+        }
+    }
 }
 
 
@@ -95,4 +129,67 @@ body{
         & > div:nth-child(5) { opacity: 0; }
         & > div:nth-child(6) { opacity: 0; }
     }
+}
+
+
+#question{
+    span {
+        font-size: 8rem;
+    }
+}
+
+
+#answer{
+    z-index: 3;
+
+    & > div{
+        & > .row{
+            position: relative;
+            height: 100%;
+            width: 100%;
+            overflow: initial;
+
+            & > div {
+                position: absolute;
+                top: 50%;
+                -webkit-transition: all 0.5s ease-in-out;
+                -moz-transition: all 0.5s ease-in-out;
+                -o-transition: all 0.5s ease-in-out;
+                -ms-transition: all 0.5s ease-in-out;
+                transition: all 0.5s ease-in-out;
+                transform: translateY(-50%);
+
+                span{ font-size: 2rem; }
+            }
+
+            & > div:nth-child(1){
+                padding-right: 8rem;
+            }
+
+            & > div:nth-child(2){
+                right: 0;
+                padding-left: 8rem;
+            }
+
+            & > div:hover{
+                transform: translateY(-50%) scale(1.1);
+                cursor: default;
+            }
+        }
+    }
+}
+
+
+#thanks{
+    span:nth-child(1){
+        font-size: 8rem;
+    }
+    span:nth-child(2){
+        font-size: 1rem !important;
+    }
+}
+
+
+.pointer{
+
 }

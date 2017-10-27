@@ -15,3 +15,15 @@
     font-weight: 400;
     src: url("Gilroy-Regular.otf") format("opentype");
 }
+
+[extra-bold]{
+    font-family: 'Gilroy-ExtraBold';
+}
+
+[light]{
+    font-family: 'Gilroy-Light';
+}
+
+[regular]{
+    font-family: 'Gilroy-Regular';
+}

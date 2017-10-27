@@ -2,12 +2,7 @@ const path = require('path');
 
 //-- Include scripts
 const scripts = [
-    "./node_modules\\jquery\\dist\\jquery.min.js",
-    "./src\\assets\\js\\jquery.foggy.min.js",
-    "./node_modules\\tether\\dist\\js\\tether.min.js",
-    "./node_modules\\bootstrap\\dist\\js\\bootstrap.min.js",
-    "./node_modules\\velocity-animate\\velocity.min.js",
-    "./node_modules\\velocity-animate\\velocity.ui.min.js"
+    "./node_modules\\jquery\\dist\\jquery.min.js"
 ];
 
 //-- Include styles

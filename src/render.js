@@ -177,7 +177,7 @@ function abs(number){
             //-- Start animation process
             let startTime, time;
             let duration = 700;
-            let startX = 0, endX = 400;
+            let startX = 0, endX = 2000;
             let $self = $(this);
             
             const run = function() {
@@ -185,15 +185,17 @@ function abs(number){
                 time = time / duration;
                 if(time <1) requestAnimationFrame(run);
                 else if (time > 1) time = 1.0;
-                time = time * time * 2;
+                time = time;
                 
                 //-- Animation
                 $self.customTransform(scrollInter(time), blurInter(time));
+                if (time == 1){
+                    resolve();
+                }
             }
             
             startTime = new Date().getTime();
             run();
-            resolve();
         });
     }
 
@@ -343,7 +345,8 @@ function wheel(){
     let color = ['#832925', '#BC684F', '#9A615D', '#E2AAA5', '#E2A882', '#3A1D15'];
 
     //-- Pages
-    let pages = $('.content').children();
+    let pages = $('.page > .content').children('[slice]');
+    console.log(pages);
     let actual = 1;
     let whileScroll = true;
     let checkScrollAfter = 150;
@@ -356,6 +359,8 @@ function wheel(){
     let jumpFactor = 1.5; //-- Times middle animation is triggered
     let topScroll = 0; //-- Base case
     let topBlur = 0; //-- Base case
+    let pageScrollFactor = 30;
+    let pageBlurFactor = 30;
 
     window.addEventListener('wheel', function(e){
 
@@ -386,8 +391,11 @@ function wheel(){
         console.log("Scroll ", scrollNumber);
 
         //-- Transition if it is possible
-        if (!animationActive)
-            transform(pages.slice(0, actual), scroll, blur);
+        if (!animationActive){
+            Array.from(pages.slice(0, actual)).forEach((value, index) => {
+                $(value).customTransform(scroll + (scrollFactor * pageScrollFactor * index), blur - (blurFactor * pageBlurFactor * index));
+            });
+        }
 
         //-- Check movement steps 
         if (whileScroll){
@@ -409,55 +417,176 @@ function wheel(){
                         final: topBlur
                     };
 
+                    //-- Page change
                     if ( scrollNumber >= 3 ){
-                        //-- Jump to the next page
-                        topScroll = -scrollFactor * 40;
-                        topBlur = blurFactor * 20;
-                        scrollAnimationStates.final = topScroll;
-                        blurAnimationStates.final = topBlur;
-                    
                         //-- New page arrive animation
                         actual++;
+                        actual = actual === 7 ? 6 : actual;
+
+                        //-- Jump to the next page
+                        topScroll = -(scrollFactor * pageScrollFactor * (actual -1));
+                        topBlur = blurFactor * pageBlurFactor * (actual - 1);
+                        scrollAnimationStates.final = topScroll;
+                        blurAnimationStates.final = topBlur;
+                        
+                        //-- Change page
                         $(pages.get(actual - 1)).animate({ opacity: 1}, 700);
+
+                        //-- Change BG color
                         $('body').attr('class', '');
-                        $('body').addClass(`color-${actual === 7 ? 6 : actual}`);
+                        $('body').addClass(`color-${actual}`);
+
+                        //-- Change BG Color on hover if applies
+                        if (actual === 3){
+                            $('#answer-1').on('mouseenter', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-e-1`);
+                            }).on('mouseleave', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-3`);
+                            });
+
+                            $('#answer-2').on('mouseenter', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-e-2`);
+                            }).on('mouseleave', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-3`);
+                            });
+                        }
+
+                        //-- Change icon if applies
+                        $('[icon]').animate({ opacity: 0 }, 350);
+                        if (actual === 1 || actual === 2)
+                            $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                        else if (actual === 3)
+                            $('[icon]#pick').animate({ opacity: 1 }, 350);
+                        else if (actual === 4)
+                            $('[icon]#timer').animate({ opacity: 1 }, 350);
                     }
 
-                    Array.from(pages.slice(0, actual)).forEach((value, index) => {
-                        $(this).specialAnimation({
-                            from: scrollAnimationStates.initial,
-                            to: scrollAnimationStates.final
+                    let animationPromises = [];
+                    animationPromises = Array.from(pages.slice(0, actual)).map((value, index) => {
+                        /*console.log("Tha index", {
+                            from: scroll + (scrollFactor * pageScrollFactor * index),
+                            to: scrollAnimationStates.final + (scrollFactor * pageScrollFactor * index)
                         },{
-                            from: blurAnimationStates.initial,
-                            to: blurAnimationStates.final
-                        }).then(function (params) {
-                            //-- Enable wheel movement again and positions righly set to the last step
-                            animationActive = false;
-                            whileScroll = true;
-                            scrollNumber = 0;
-                            scroll = topScroll;
-                            blur = topBlur;
+                            from: blurAnimationStates.initial - (blurFactor * pageBlurFactor * index),
+                            to: blurAnimationStates.final - (blurFactor * pageBlurFactor * index)
+                        }, value);*/
+                        
+                        return $(value).specialAnimation({
+                            from: scroll + (scrollFactor * pageScrollFactor * index),
+                            to: scrollAnimationStates.final + (scrollFactor * pageScrollFactor * index)
+                        },{
+                            from: blurAnimationStates.initial - (blurFactor * pageBlurFactor * index),
+                            to: blurAnimationStates.final - (blurFactor * pageBlurFactor * index)
                         });
                     });
 
+                    //-- Sync all the animations
+                    Promise.all(animationPromises).then(function (params) {
+                        //-- Enable wheel movement again and positions righly set to the last step
+                        animationActive = false;
+                        whileScroll = true;
+                        scrollNumber = 0;
+                        scroll = topScroll;
+                        blur = topBlur;
+
+                        console.log("Animation ends");
+                    });
+
                 }else if (lastDirection == 'down' && !animationActive){
-                    /*animate(
-                        pages.slice(0, actual), 
-                        {
-                            initial: scroll,
-                            final: scroll + scrollFactor * size,
-                            factor: scrollFactor
+                    animationActive = true;
+                    
+                    let scrollAnimationStates = { 
+                        initial: scroll,
+                        final: topScroll
+                    };
+
+                    let blurAnimationStates = {
+                        initial: blur,
+                        final: topBlur
+                    };
+
+                    //-- Page change
+                    if ( scrollNumber >= 3 ){
+                        //-- New page goes animation
+                        actual--;
+                        actual = actual === 7 ? 6 : actual;
+
+                        //-- Jump to the next page
+                        topScroll = +(scrollFactor * pageScrollFactor * (actual -1));
+                        topBlur = -(blurFactor * pageBlurFactor * (actual - 1));
+                        scrollAnimationStates.final = topScroll;
+                        blurAnimationStates.final = topBlur;
+                        
+                        //-- Change page
+                        $(pages.get(actual)).animate({ opacity: 0}, 700);
+
+                        //-- Change BG color
+                        $('body').attr('class', '');
+                        $('body').addClass(`color-${actual}`);
+
+                        //-- Change BG Color on hover if applies
+                        if (actual === 3){
+                            $('#answer-1').on('mouseenter', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-e-1`);
+                            }).on('mouseleave', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-3`);
+                            });
+
+                            $('#answer-2').on('mouseenter', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-e-2`);
+                            }).on('mouseleave', function(){
+                                $('body').attr('class', '');
+                                $('body').addClass(`color-3`);
+                            });
+                        }
+
+                        //-- Change icon if applies
+                        $('[icon]').animate({ opacity: 0 }, 350);
+                        if (actual === 1 || actual === 2)
+                            $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                        else if (actual === 3)
+                            $('[icon]#pick').animate({ opacity: 1 }, 350);
+                        else if (actual === 4)
+                            $('[icon]#timer').animate({ opacity: 1 }, 350);
+                    }
+
+                    let animationPromises = [];
+                    animationPromises = Array.from(pages.slice(0, actual)).map((value, index) => {
+                        /*console.log("Tha index", {
+                            from: scroll - (scrollFactor * pageScrollFactor * index),
+                            to: scrollAnimationStates.final - (scrollFactor * pageScrollFactor * index)
                         },{
-                            initial: blur,
-                            final: blur - blurFactor * size,
-                            factor: blurFactor
-                        }, 'down').then((response) => {
-                            //-- Animation ended
-                            animationActive = false;
-                        }).catch((error) => {
-                            //-- Show error
-                            console.log("An error ocurred :: ", error);
-                        });*/
+                            from: blurAnimationStates.initial + (blurFactor * pageBlurFactor * index),
+                            to: blurAnimationStates.final + (blurFactor * pageBlurFactor * index)
+                        }, value);*/
+                        
+                        return $(value).specialAnimation({
+                            from: scroll - (scrollFactor * pageScrollFactor * index),
+                            to: scrollAnimationStates.final - (scrollFactor * pageScrollFactor * index)
+                        },{
+                            from: blurAnimationStates.initial + (blurFactor * pageBlurFactor * index),
+                            to: blurAnimationStates.final + (blurFactor * pageBlurFactor * index)
+                        });
+                    });
+
+                    //-- Sync all the animations
+                    Promise.all(animationPromises).then(function (params) {
+                        //-- Enable wheel movement again and positions righly set to the last step
+                        animationActive = false;
+                        whileScroll = true;
+                        scrollNumber = 0;
+                        scroll = topScroll;
+                        blur = topBlur;
+
+                        console.log("Animation ends");
+                    });
                 }
             }, checkScrollAfter, direction);
         }
