@@ -47,6 +47,60 @@ body{
 }
 
 
+.dispose{
+    position: fixed;
+    width: 4vw;
+    height: 7vh;
+    right: 0;
+    z-index: 3;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+
+    & > .content{
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        display: inline-grid;
+        overflow: initial;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        -ms-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+
+        & > img {
+            width: 40px;
+            height: auto;
+
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            -o-transition: all 0.5s ease-in-out;
+            -ms-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+        }
+
+        & > span {
+            font-size: 1rem;
+            margin-left: -7px;
+            margin-bottom: 7px;        
+        }
+    }
+}
+
+.dispose:hover{
+    cursor: pointer;
+    
+    & > .content{
+        & > img {
+            transform: scale(1.05);
+        }
+    }
+}
+
+
 #timer{
     opacity: 0;
     & >.content{
