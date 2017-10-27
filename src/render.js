@@ -7,6 +7,7 @@ require('jquery.transit');
 require('tilt.js');
 
 
+
 function parallax(){
     $('.page').tilt({
         perspective: 1800,
@@ -56,6 +57,67 @@ function abs(number){
 
 
 (function($){
+    $.fn.swipe = function( callback ) {
+        var touchDown = false,
+          originalPosition = null,
+          $el = $( this );
+      
+        function swipeInfo( event ) {
+          if ('undefined' !== typeof event.originalEvent.pageX) {
+            var x = event.originalEvent.pageX,
+                y = event.originalEvent.pageY,
+                dx, dy;
+          }else{
+            var x = event.originalEvent.touches[0].pageX,
+                y = event.originalEvent.touches[0].pageY,
+                dx, dy;
+          }
+      
+          dx = ( x > originalPosition.x ) ? "right" : "left";
+          dy = ( y > originalPosition.y ) ? "down" : "up";
+      
+          return {
+            direction: {
+              x: dx,
+              y: dy
+            },
+            offset: {
+              x: x - originalPosition.x,
+              y: originalPosition.y - y
+            }
+          };
+        }
+      
+        $el.on( "touchstart mousedown", function ( event ) {
+          touchDown = true;
+          if ('undefined' !== typeof event.originalEvent.pageX) {
+            originalPosition = {
+              x: event.originalEvent.pageX,
+              y: event.originalEvent.pageY
+            };
+          }else{
+            originalPosition = {
+              x: event.originalEvent.touches[0].pageX,
+              y: event.originalEvent.touches[0].pageY
+            };
+          }
+        } );
+      
+        $el.on( "touchend mouseup", function () {
+          touchDown = false;
+          originalPosition = null;
+        } );
+      
+        $el.on( "touchmove mousemove", function ( event ) {
+          if ( !touchDown ) { return;}
+          var info = swipeInfo( event );
+          callback( info.direction, info.offset );
+        } );
+      
+        return true;
+    };
+
+
     $.fn.customAnimation = function (values = {
         initial: 0, /* Initial value of interpotaltion */
         final: 0 /* Final value after interpolation */
@@ -346,7 +408,7 @@ function wheel(){
 
     //-- Pages
     let pages = $('.page > .content').children('[slice]');
-    console.log(pages);
+    let pagesMobile = $('[page-mobile] > .content').children('[slice]');
     let actual = 1;
     let whileScroll = true;
     let checkScrollAfter = 150;
@@ -361,6 +423,158 @@ function wheel(){
     let topBlur = 0; //-- Base case
     let pageScrollFactor = 30;
     let pageBlurFactor = 30;
+
+    let swipeActive = false;
+
+    //-- For mobile
+    $(window).swipe(function( direction, offset ) {
+        console.log(window.innerWidth, window.innerHeight);
+        console.log('Direction :: ', direction.y);
+
+        if (direction.y === 'up' && !swipeActive){
+            //-- Go to the next page in mobile and desktop
+            actual++;
+            actual = actual === 7 ? 6 : actual;
+            swipeActive = true;
+
+            //-- Mobile
+            pagesMobile.animate({ opacity: 0 }, 350);
+            $(pagesMobile.get(actual - 1)).animate({ opacity: 1 }, 350);
+
+            //-- Change BG color
+            $('body').attr('class', '');
+            $('body').addClass(`color-${actual}`);
+
+            //-- Change BG Color on hover if applies
+            if (actual === 3){
+                $('#answer-1').on('mouseenter', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-e-1`);
+                }).on('mouseleave', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-3`);
+                });
+
+                $('#answer-2').on('mouseenter', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-e-2`);
+                }).on('mouseleave', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-3`);
+                });
+            }
+
+            //-- Change icon if applies
+            $('[icon]').animate({ opacity: 0 }, 350);
+            if (actual === 1 || actual === 2)
+                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+            else if (actual === 3)
+                $('[icon]#pick').animate({ opacity: 1 }, 350);
+            else if (actual === 4)
+                $('[icon]#timer').animate({ opacity: 1 }, 350);
+
+            
+            setTimeout(function(){
+                swipeActive = false;
+                console.log("Hier");
+            }, 700);
+
+        }else if (direction.y === 'down'){
+            //-- Go to the previous page mobile and desktop
+
+        }
+    });
+
+
+    window.addEventListener("keyup", function(e){
+
+        if (e.key == "ArrowUp"){
+            animationActive = true;
+            
+            let scrollAnimationStates = { 
+                initial: scroll,
+                final: topScroll
+            };
+    
+            let blurAnimationStates = {
+                initial: blur,
+                final: topBlur
+            };
+    
+            //-- Page change
+
+            //-- New page arrive animation
+            actual++;
+            actual = actual === 7 ? 6 : actual;
+
+            //-- Jump to the next page
+            topScroll = -(scrollFactor * pageScrollFactor * (actual -1));
+            topBlur = blurFactor * pageBlurFactor * (actual - 1);
+            scrollAnimationStates.final = topScroll;
+            blurAnimationStates.final = topBlur;
+            
+            //-- Change page
+            $(pages.get(actual - 1)).animate({ opacity: 1}, 700);
+
+            //-- Change BG color
+            $('body').attr('class', '');
+            $('body').addClass(`color-${actual}`);
+
+            //-- Change BG Color on hover if applies
+            if (actual === 3){
+                $('#answer-1').on('mouseenter', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-e-1`);
+                }).on('mouseleave', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-3`);
+                });
+
+                $('#answer-2').on('mouseenter', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-e-2`);
+                }).on('mouseleave', function(){
+                    $('body').attr('class', '');
+                    $('body').addClass(`color-3`);
+                });
+            }
+
+            //-- Change icon if applies
+            $('[icon]').animate({ opacity: 0 }, 350);
+            if (actual === 1 || actual === 2)
+                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+            else if (actual === 3)
+                $('[icon]#pick').animate({ opacity: 1 }, 350);
+            else if (actual === 4)
+                $('[icon]#timer').animate({ opacity: 1 }, 350);
+            
+    
+            let animationPromises = [];
+            animationPromises = Array.from(pages.slice(0, actual)).map((value, index) => {
+                return $(value).specialAnimation({
+                    from: scroll + (scrollFactor * pageScrollFactor * index),
+                    to: scrollAnimationStates.final + (scrollFactor * pageScrollFactor * index)
+                },{
+                    from: blurAnimationStates.initial - (blurFactor * pageBlurFactor * index),
+                    to: blurAnimationStates.final - (blurFactor * pageBlurFactor * index)
+                });
+            });
+    
+            //-- Sync all the animations
+            Promise.all(animationPromises).then(function (params) {
+                //-- Enable wheel movement again and positions righly set to the last step
+                animationActive = false;
+                whileScroll = true;
+                scrollNumber = 0;
+                scroll = topScroll;
+                blur = topBlur;
+    
+                console.log("Animation ends");
+            });
+        }
+
+    });
+
 
     window.addEventListener('wheel', function(e){
 
@@ -605,4 +819,7 @@ module.exports = function($){
 
     //-- Start wheel event
     wheel();
+
+    //-- Show everything
+    $('body').css('display', 'block');
 }

@@ -49,7 +49,7 @@ body{
 
 .dispose{
     position: fixed;
-    width: 4vw;
+    width: 100vw;
     height: 7vh;
     right: 0;
     z-index: 3;
@@ -186,14 +186,102 @@ body{
 }
 
 
-#question{
+[page-mobile]{
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background: transparent;
+
+    & > .content{
+        text-align: center;
+        display: table;
+        height: 100%;
+
+        & > div {
+            position: absolute;
+            perspective: 500px;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+
+            -webkit-font-smoothing: subpixel-antialiased;
+
+            & > div {
+                position: relative;
+                width: 100vw;
+                height: 100vh;
+                display: table-cell;
+                vertical-align: middle;
+
+                -webkit-font-smoothing: subpixel-antialiased;
+
+                & > span {
+                    font-size: 2.5rem;
+
+                    -webkit-font-smoothing: subpixel-antialiased;
+                    backface-visibility: hidden; 
+                    transform: translateZ(0) scale(1.0, 1.0) !important;
+                    
+                }
+            }
+
+            & > div:nth-child(1){
+                padding-left: 15%;
+                padding-right: 15%;
+
+                & > span{ 
+                    font-size: 60px; 
+                    @media (max-width: 768px){
+                        font-size: 1.5rem;
+                    }
+                }
+
+                @media screen and (min-width: 768px) and (max-width: 1024px){
+                    padding-left: 10%;
+                    padding-right: 10%;
+                    & > span{ font-size: 39px; }
+                }
+            }
+
+        }
+
+        & > div:nth-child(1) { 
+            opacity: 1; 
+        }
+
+        & > div:nth-child(2) { 
+            opacity: 0; 
+        }
+
+        & > div:nth-child(3) { 
+            opacity: 0; 
+        }
+
+        & > div:nth-child(4) { 
+            opacity: 0; 
+        }
+
+        & > div:nth-child(5) { 
+            opacity: 0; 
+        }
+
+        & > div:nth-child(6) { 
+            opacity: 0; 
+        }
+    }
+}
+
+
+
+.question{
     span {
         font-size: 8rem;
     }
 }
 
 
-#answer{
+.answer{
     z-index: 3;
 
     & > div{
@@ -234,13 +322,25 @@ body{
 }
 
 
-#thanks{
+.thanks{
     span:nth-child(1){
         font-size: 8rem;
     }
     span:nth-child(2){
         font-size: 1rem !important;
     }
+}
+
+
+[page-no-mobile]{
+    @media (max-width: 768px){ display: none; }
+    @media (min-width: 768px){ display: block; }
+}
+
+
+[page-mobile]{
+    @media (max-width: 768px){ display: block; }
+    @media (min-width: 768px){ display: none; }
 }
 
 
