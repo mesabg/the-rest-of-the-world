@@ -49,7 +49,8 @@ body{
 
 .dispose{
     position: fixed;
-    width: 100vw;
+    overflow: initial;
+    width: 0px;
     height: 7vh;
     right: 0;
     z-index: 3;
@@ -96,6 +97,19 @@ body{
     & > .content{
         & > img {
             transform: scale(1.05);
+        }
+    }
+}
+
+#mouse{
+    opacity: 0;
+}
+
+#finger{
+    opacity: 0;
+    & >.content{
+        & > img {
+            margin-left: -7px;
         }
     }
 }
@@ -175,6 +189,18 @@ body{
             }
 
         }
+
+        .thx{
+            font-size: 8rem !important;
+        }
+
+        .redirect{ 
+            font-size: 2rem !important; 
+            @media (max-width: 768px){
+                font-size: 1rem !important;
+            }
+        }
+
 
         & > div:nth-child(1) { opacity: 1; }
         & > div:nth-child(2) { opacity: 0; }
@@ -286,7 +312,11 @@ body{
 
 .question{
     span {
-        font-size: 8rem;
+        font-size: 8rem !important;
+
+        @media (max-width: 768px){
+            font-size: 2rem !important;
+        }
     }
 }
 
@@ -300,19 +330,30 @@ body{
             height: 100%;
             width: 100%;
             overflow: initial;
+            margin: 0px;
+
+            @media (max-width: 768px){
+                height: auto;
+            }
+
 
             & > div {
                 position: absolute;
                 top: 50%;
-                -webkit-transition: all 0.5s ease-in-out;
-                -moz-transition: all 0.5s ease-in-out;
-                -o-transition: all 0.5s ease-in-out;
-                -ms-transition: all 0.5s ease-in-out;
-                transition: all 0.5s ease-in-out;
+
+                @media (max-width: 768px){
+                    position: initial;
+                }
+
+                -webkit-transition: all 0.8s ease-in-out;
+                -moz-transition: all 0.8s ease-in-out;
+                -o-transition: all 0.8s ease-in-out;
+                -ms-transition: all 0.8s ease-in-out;
+                transition: all 0.8s ease-in-out;
                 transform: translateY(-50%);
 
                 span{ 
-                    font-size: 2rem; 
+                    font-size: 1.8rem; 
 
                     @media (max-width: 768px){
                         font-size: 1rem !important;
@@ -321,7 +362,7 @@ body{
             }
 
             & > div:nth-child(1){
-                padding-right: 8rem;
+                padding-right: 18rem;
 
                 @media (max-width: 768px){
                     padding-right: 15px;
@@ -330,7 +371,7 @@ body{
 
             & > div:nth-child(2){
                 right: 0;
-                padding-left: 8rem;
+                padding-left: 18rem;
 
                 @media (max-width: 768px){
                     padding-left: 15px;
@@ -338,7 +379,7 @@ body{
             }
 
             & > div:hover{
-                transform: translateY(-50%) scale(1.1);
+                transform: translateY(-50%) scale(1.6);
                 cursor: default;
             }
         }
@@ -370,4 +411,9 @@ body{
 
 .pointer{
 
+}
+
+
+span{
+    //text-shadow: ;
 }

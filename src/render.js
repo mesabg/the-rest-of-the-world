@@ -400,14 +400,14 @@ function wheel(){
 
     //-- Variables for blur and scroll
     let scroll = 0;
-    let scrollFactor = 0.5;
+    let scrollFactor = 0.65;
     let blur = 0;
-    let blurFactor = 1.8;
+    let blurFactor = 2.5;
     let scrollNumber = 0;
     let color = ['#832925', '#BC684F', '#9A615D', '#E2AAA5', '#E2A882', '#3A1D15'];
 
     //-- Pages
-    let pages = $('.page > .content').children('[slice]');
+    let pages = $('[page-no-mobile] > .content').children('[slice]');
     let pagesMobile = $('[page-mobile] > .content').children('[slice]');
     let actual = 1;
     let whileScroll = true;
@@ -426,6 +426,172 @@ function wheel(){
 
     let swipeActive = false;
 
+    let optionSelected = undefined;
+
+
+    //-- resize ICON Check
+    $('[icon]').animate({ opacity: 0 }, 350);
+    if (actual === 1 || actual === 2){
+        if ( window.innerWidth < 768 ){
+            $('[icon]#finger').animate({ opacity: 1 }, 350);
+            $('[icon]#mouse').animate({ opacity: 0 }, 350);
+        }else{
+            $('[icon]#mouse').animate({ opacity: 1 }, 350);
+            $('[icon]#finger').animate({ opacity: 0 }, 350);
+        }
+    }
+
+    $(window).on('resize', function(){
+        //-- Change icon if applies
+        $('[icon]').animate({ opacity: 0 }, 350);
+        if (actual === 1 || actual === 2){
+            if ( window.innerWidth < 768 ){
+                $('[icon]#finger').animate({ opacity: 1 }, 350);
+                $('[icon]#mouse').animate({ opacity: 0 }, 350);
+            }else{
+                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                $('[icon]#finger').animate({ opacity: 0 }, 350);
+            }
+        }
+    });
+
+
+    //-- Change page 
+    function changePage(){
+        animationActive = true;
+        
+        let scrollAnimationStates = { 
+            initial: scroll,
+            final: topScroll
+        };
+
+        let blurAnimationStates = {
+            initial: blur,
+            final: topBlur
+        };
+
+
+        //-- New page arrive animation
+        actual++;
+        actual = actual === 4 && optionSelected === undefined ? 3 : actual;
+        actual = actual === 5 ? 4 : actual;
+
+        //-- Sanity
+        if (actual === 4){
+            pages.slice(0, actual - 1).stop().animate({opacity: 0}, 500, 'swing', function(){
+                $(this).css('display', 'none');
+                setTimeout(function(){
+                    window.location.replace('http://restoftheworld.agency/');
+                }, 4000);
+            });
+        }
+
+        //-- Jump to the next page
+        topScroll = -(scrollFactor * pageScrollFactor * (actual -1));
+        topBlur = blurFactor * pageBlurFactor * (actual - 1);
+        scrollAnimationStates.final = topScroll;
+        blurAnimationStates.final = topBlur;
+        
+
+        //-- Change page (Desktop)
+        $(pages.get(actual - 1)).animate({ opacity: 1}, 700);
+
+
+        //-- Change page mobile
+        pagesMobile.animate({ opacity: 0 }, 350);
+        $(pagesMobile.get(actual - 1)).animate({ opacity: 1 }, 350);
+
+
+        //-- Change BG color
+        $('body').attr('class', '');
+        $('body').addClass(`color-${actual}`);
+
+        //-- Change BG Color on hover if applies
+        if (actual === 3){
+            $('.answer-1').on('mouseenter', function(){
+                $('body').attr('class', '');
+                $('body').addClass(`color-e-1`);
+            }).on('mouseleave', function(){
+                $('body').attr('class', '');
+                $('body').addClass(`color-3`);
+            });
+
+            $('.answer-2').on('mouseenter', function(){
+                $('body').attr('class', '');
+                $('body').addClass(`color-e-2`);
+            }).on('mouseleave', function(){
+                $('body').attr('class', '');
+                $('body').addClass(`color-3`);
+            });
+        }
+
+        //-- Change icon if applies
+        $('[icon]').animate({ opacity: 0 }, 350);
+        if (actual === 1 || actual === 2){
+            if ( window.innerWidth < 768 ){
+                $('[icon]#finger').animate({ opacity: 1 }, 350);
+                $('[icon]#mouse').animate({ opacity: 0 }, 350);
+            }else{
+                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                $('[icon]#finger').animate({ opacity: 0 }, 350);
+            }
+        }else if (actual === 3)
+            $('[icon]#pick').animate({ opacity: 1 }, 350);
+        else if (actual === 4)
+            $('[icon]#timer').animate({ opacity: 1 }, 350);
+        
+
+        let animationPromises = [];
+        animationPromises = Array.from(pages.slice(0, actual)).map((value, index) => {
+            return $(value).specialAnimation({
+                from: scroll + (scrollFactor * pageScrollFactor * index),
+                to: scrollAnimationStates.final + (scrollFactor * pageScrollFactor * index)
+            },{
+                from: blurAnimationStates.initial - (blurFactor * pageBlurFactor * index),
+                to: blurAnimationStates.final - (blurFactor * pageBlurFactor * index)
+            });
+        });
+
+        //-- Sync all the animations
+        Promise.all(animationPromises).then(function (params) {
+            //-- Enable wheel movement again and positions righly set to the last step
+            animationActive = false;
+            whileScroll = true;
+            scrollNumber = 0;
+            scroll = topScroll;
+            blur = topBlur;
+
+            //-- Enable main shadow if everything is correct
+            console.log($(pages.slice(0, actual).get(actual - 1)));
+            $(pages.slice(0, actual).get(actual - 1)).find('div > span').css({
+                color: 'transparent',
+                textShadow: `1px 1px 70px rgba(150, 150, 150, 1)`
+            });
+
+        });
+    }
+
+
+    //-- Hear options movement
+    $('[response-1]').on('click', function(){
+        optionSelected = $(this).children().get(0).innerText;
+        //-- Send text throung ajax
+        changePage();
+    });
+
+    $('[response-2]').on('click', function(){
+        optionSelected = $(this).children().get(0).innerText;
+        //-- Send text throung ajax
+        changePage();
+    });
+
+
+    //-- Dispose event
+    $('[dispose-icon]').on('click', function(){
+        window.location.replace('http://restoftheworld.agency/');
+    });
+
+
     //-- For mobile
     $(window).swipe(function( direction, offset ) {
         console.log(window.innerWidth, window.innerHeight);
@@ -434,8 +600,9 @@ function wheel(){
         if (direction.y === 'up' && !swipeActive){
             //-- Go to the next page in mobile and desktop
             actual++;
-            actual = actual === 7 ? 6 : actual;
-            swipeActive = true;
+            actual = actual === 4 && optionSelected === undefined ? 3 : actual;
+            actual = actual === 5 ? 4 : actual;
+
 
             //-- Mobile
             pagesMobile.animate({ opacity: 0 }, 350);
@@ -449,7 +616,7 @@ function wheel(){
 
             //-- Change BG Color on hover if applies
             if (actual === 3){
-                $('#answer-1').on('mouseenter', function(){
+                $('.answer-1').on('mouseenter', function(){
                     $('body').attr('class', '');
                     $('body').addClass(`color-e-1`);
                 }).on('mouseleave', function(){
@@ -457,7 +624,7 @@ function wheel(){
                     $('body').addClass(`color-3`);
                 });
 
-                $('#answer-2').on('mouseenter', function(){
+                $('.answer-2').on('mouseenter', function(){
                     $('body').attr('class', '');
                     $('body').addClass(`color-e-2`);
                 }).on('mouseleave', function(){
@@ -469,7 +636,13 @@ function wheel(){
             //-- Change icon if applies
             $('[icon]').animate({ opacity: 0 }, 350);
             if (actual === 1 || actual === 2)
-                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                if ( window.innerWidth < 768 ){
+                    $('[icon]#finger').animate({ opacity: 1 }, 350);
+                    $('[icon]#mouse').animate({ opacity: 0 }, 350);
+                }else{
+                    $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                    $('[icon]#finger').animate({ opacity: 0 }, 350);
+                }
             else if (actual === 3)
                 $('[icon]#pick').animate({ opacity: 1 }, 350);
             else if (actual === 4)
@@ -478,7 +651,6 @@ function wheel(){
             
             setTimeout(function(){
                 swipeActive = false;
-                console.log("Hier");
             }, 700);
 
         }else if (direction.y === 'down'){
@@ -490,7 +662,7 @@ function wheel(){
 
     window.addEventListener("keyup", function(e){
 
-        if (e.key == "ArrowUp"){
+        if (e.key == "ArrowDown"){
             animationActive = true;
             
             let scrollAnimationStates = { 
@@ -507,7 +679,9 @@ function wheel(){
 
             //-- New page arrive animation
             actual++;
-            actual = actual === 7 ? 6 : actual;
+            actual = actual === 4 && optionSelected === undefined ? 3 : actual;
+            actual = actual === 5 ? 4 : actual;
+
 
             //-- Jump to the next page
             topScroll = -(scrollFactor * pageScrollFactor * (actual -1));
@@ -515,8 +689,15 @@ function wheel(){
             scrollAnimationStates.final = topScroll;
             blurAnimationStates.final = topBlur;
             
-            //-- Change page
+
+            //-- Change page (Desktop)
             $(pages.get(actual - 1)).animate({ opacity: 1}, 700);
+
+
+            //-- Change page mobile
+            pagesMobile.animate({ opacity: 0 }, 350);
+            $(pagesMobile.get(actual - 1)).animate({ opacity: 1 }, 350);
+
 
             //-- Change BG color
             $('body').attr('class', '');
@@ -524,7 +705,7 @@ function wheel(){
 
             //-- Change BG Color on hover if applies
             if (actual === 3){
-                $('#answer-1').on('mouseenter', function(){
+                $('.answer-1').on('mouseenter', function(){
                     $('body').attr('class', '');
                     $('body').addClass(`color-e-1`);
                 }).on('mouseleave', function(){
@@ -532,7 +713,7 @@ function wheel(){
                     $('body').addClass(`color-3`);
                 });
 
-                $('#answer-2').on('mouseenter', function(){
+                $('.answer-2').on('mouseenter', function(){
                     $('body').attr('class', '');
                     $('body').addClass(`color-e-2`);
                 }).on('mouseleave', function(){
@@ -544,7 +725,13 @@ function wheel(){
             //-- Change icon if applies
             $('[icon]').animate({ opacity: 0 }, 350);
             if (actual === 1 || actual === 2)
-                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                if ( window.innerWidth < 768 ){
+                    $('[icon]#finger').animate({ opacity: 1 }, 350);
+                    $('[icon]#mouse').animate({ opacity: 0 }, 350);
+                }else{
+                    $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                    $('[icon]#finger').animate({ opacity: 0 }, 350);
+                }
             else if (actual === 3)
                 $('[icon]#pick').animate({ opacity: 1 }, 350);
             else if (actual === 4)
@@ -570,11 +757,16 @@ function wheel(){
                 scrollNumber = 0;
                 scroll = topScroll;
                 blur = topBlur;
+
+                console.log($(pages.slice(0, actual)));
+                $(pages.slice(0, actual).get(actual)).find('div > span').css({
+                    //color: 'transparent',
+                    textShadow: `1px 1px 2px rgba(150, 150, 150, 1)`
+                });
     
                 console.log("Animation ends");
             });
         }
-
     });
 
 
@@ -604,7 +796,7 @@ function wheel(){
             onReset = true;
         }
 
-        console.log("Scroll ", scrollNumber);
+        //console.log("Scroll ", scrollNumber);
 
         //-- Transition if it is possible
         if (!animationActive){
@@ -637,7 +829,8 @@ function wheel(){
                     if ( scrollNumber >= 3 ){
                         //-- New page arrive animation
                         actual++;
-                        actual = actual === 7 ? 6 : actual;
+                        actual = actual === 4 && optionSelected === undefined ? 3 : actual;
+                        actual = actual === 5 ? 4 : actual;
 
                         //-- Jump to the next page
                         topScroll = -(scrollFactor * pageScrollFactor * (actual -1));
@@ -645,8 +838,13 @@ function wheel(){
                         scrollAnimationStates.final = topScroll;
                         blurAnimationStates.final = topBlur;
                         
+                        //-- Change page mobile
+                        pagesMobile.animate({ opacity: 0 }, 350);
+                        $(pagesMobile.get(actual - 1)).animate({ opacity: 1 }, 350);
+
                         //-- Change page
                         $(pages.get(actual - 1)).animate({ opacity: 1}, 700);
+                        pages.slice(0, actual - 1).animate( { opacity: '-=0.3' }, 700);
 
                         //-- Change BG color
                         $('body').attr('class', '');
@@ -654,7 +852,7 @@ function wheel(){
 
                         //-- Change BG Color on hover if applies
                         if (actual === 3){
-                            $('#answer-1').on('mouseenter', function(){
+                            $('.answer-1').on('mouseenter', function(){
                                 $('body').attr('class', '');
                                 $('body').addClass(`color-e-1`);
                             }).on('mouseleave', function(){
@@ -662,7 +860,7 @@ function wheel(){
                                 $('body').addClass(`color-3`);
                             });
 
-                            $('#answer-2').on('mouseenter', function(){
+                            $('.answer-2').on('mouseenter', function(){
                                 $('body').attr('class', '');
                                 $('body').addClass(`color-e-2`);
                             }).on('mouseleave', function(){
@@ -674,7 +872,13 @@ function wheel(){
                         //-- Change icon if applies
                         $('[icon]').animate({ opacity: 0 }, 350);
                         if (actual === 1 || actual === 2)
-                            $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                            if ( window.innerWidth < 768 ){
+                                $('[icon]#finger').animate({ opacity: 1 }, 350);
+                                $('[icon]#mouse').animate({ opacity: 0 }, 350);
+                            }else{
+                                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                                $('[icon]#finger').animate({ opacity: 0 }, 350);
+                            }
                         else if (actual === 3)
                             $('[icon]#pick').animate({ opacity: 1 }, 350);
                         else if (actual === 4)
@@ -683,14 +887,6 @@ function wheel(){
 
                     let animationPromises = [];
                     animationPromises = Array.from(pages.slice(0, actual)).map((value, index) => {
-                        /*console.log("Tha index", {
-                            from: scroll + (scrollFactor * pageScrollFactor * index),
-                            to: scrollAnimationStates.final + (scrollFactor * pageScrollFactor * index)
-                        },{
-                            from: blurAnimationStates.initial - (blurFactor * pageBlurFactor * index),
-                            to: blurAnimationStates.final - (blurFactor * pageBlurFactor * index)
-                        }, value);*/
-                        
                         return $(value).specialAnimation({
                             from: scroll + (scrollFactor * pageScrollFactor * index),
                             to: scrollAnimationStates.final + (scrollFactor * pageScrollFactor * index)
@@ -708,6 +904,11 @@ function wheel(){
                         scrollNumber = 0;
                         scroll = topScroll;
                         blur = topBlur;
+
+                        $(pages.slice(0, actual).get(actual-1)).find('div > span').css({
+                            color: 'white',
+                            textShadow: `1px 2px 4px rgba(130, 130, 130, 1)`
+                        });
 
                         console.log("Animation ends");
                     });
@@ -729,7 +930,7 @@ function wheel(){
                     if ( scrollNumber >= 3 ){
                         //-- New page goes animation
                         actual--;
-                        actual = actual === 7 ? 6 : actual;
+                        actual = actual === 4 ? 3 : actual;
 
                         //-- Jump to the next page
                         topScroll = +(scrollFactor * pageScrollFactor * (actual -1));
@@ -746,7 +947,7 @@ function wheel(){
 
                         //-- Change BG Color on hover if applies
                         if (actual === 3){
-                            $('#answer-1').on('mouseenter', function(){
+                            $('.answer-1').on('mouseenter', function(){
                                 $('body').attr('class', '');
                                 $('body').addClass(`color-e-1`);
                             }).on('mouseleave', function(){
@@ -754,7 +955,7 @@ function wheel(){
                                 $('body').addClass(`color-3`);
                             });
 
-                            $('#answer-2').on('mouseenter', function(){
+                            $('.answer-2').on('mouseenter', function(){
                                 $('body').attr('class', '');
                                 $('body').addClass(`color-e-2`);
                             }).on('mouseleave', function(){
@@ -766,7 +967,13 @@ function wheel(){
                         //-- Change icon if applies
                         $('[icon]').animate({ opacity: 0 }, 350);
                         if (actual === 1 || actual === 2)
-                            $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                            if ( window.innerWidth < 768 ){
+                                $('[icon]#finger').animate({ opacity: 1 }, 350);
+                                $('[icon]#mouse').animate({ opacity: 0 }, 350);
+                            }else{
+                                $('[icon]#mouse').animate({ opacity: 1 }, 350);
+                                $('[icon]#finger').animate({ opacity: 0 }, 350);
+                            }
                         else if (actual === 3)
                             $('[icon]#pick').animate({ opacity: 1 }, 350);
                         else if (actual === 4)
@@ -775,14 +982,6 @@ function wheel(){
 
                     let animationPromises = [];
                     animationPromises = Array.from(pages.slice(0, actual)).map((value, index) => {
-                        /*console.log("Tha index", {
-                            from: scroll - (scrollFactor * pageScrollFactor * index),
-                            to: scrollAnimationStates.final - (scrollFactor * pageScrollFactor * index)
-                        },{
-                            from: blurAnimationStates.initial + (blurFactor * pageBlurFactor * index),
-                            to: blurAnimationStates.final + (blurFactor * pageBlurFactor * index)
-                        }, value);*/
-                        
                         return $(value).specialAnimation({
                             from: scroll - (scrollFactor * pageScrollFactor * index),
                             to: scrollAnimationStates.final - (scrollFactor * pageScrollFactor * index)
