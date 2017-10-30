@@ -402,7 +402,7 @@ function wheel(){
     let scroll = 0;
     let scrollFactor = 0.65;
     let blur = 0;
-    let blurFactor = 2.5;
+    let blurFactor = 0.9;
     let scrollNumber = 0;
     let color = ['#832925', '#BC684F', '#9A615D', '#E2AAA5', '#E2A882', '#3A1D15'];
 
@@ -440,6 +440,11 @@ function wheel(){
             $('[icon]#finger').animate({ opacity: 0 }, 350);
         }
     }
+
+    $(pages.slice(0, actual).get(actual-1)).find('div > span').css({
+        color: 'white',
+        textShadow: `0px 2px 3px rgba(0, 0, 0, 0.5)`
+    });
 
     $(window).on('resize', function(){
         //-- Change icon if applies
@@ -561,13 +566,11 @@ function wheel(){
             scroll = topScroll;
             blur = topBlur;
 
-            //-- Enable main shadow if everything is correct
-            console.log($(pages.slice(0, actual).get(actual - 1)));
-            $(pages.slice(0, actual).get(actual - 1)).find('div > span').css({
-                color: 'transparent',
-                textShadow: `1px 1px 70px rgba(150, 150, 150, 1)`
+            
+            $(pages.slice(0, actual).get(actual-1)).find('div > span').css({
+                color: 'white',
+                textShadow: `0px 2px 3px rgba(0, 0, 0, 0.5)`
             });
-
         });
     }
 
@@ -758,10 +761,9 @@ function wheel(){
                 scroll = topScroll;
                 blur = topBlur;
 
-                console.log($(pages.slice(0, actual)));
-                $(pages.slice(0, actual).get(actual)).find('div > span').css({
-                    //color: 'transparent',
-                    textShadow: `1px 1px 2px rgba(150, 150, 150, 1)`
+                $(pages.slice(0, actual).get(actual-1)).find('div > span').css({
+                    color: 'white',
+                    textShadow: `0px 2px 3px rgba(0, 0, 0, 0.5)`
                 });
     
                 console.log("Animation ends");
@@ -907,7 +909,7 @@ function wheel(){
 
                         $(pages.slice(0, actual).get(actual-1)).find('div > span').css({
                             color: 'white',
-                            textShadow: `1px 2px 4px rgba(130, 130, 130, 1)`
+                            textShadow: `0px 2px 3px rgba(0, 0, 0, 0.5)`
                         });
 
                         console.log("Animation ends");
