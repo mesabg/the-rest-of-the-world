@@ -192,6 +192,22 @@ body{
 
         .thx{
             font-size: 8rem !important;
+            
+            @media (min-width: 200px) and (max-width: 768px){
+                font-size: 4rem;
+            }
+
+            @media (min-width: 768px) and (max-width: 1024px){
+                font-size: 3rem;
+            }
+
+            @media (min-width: 1024px) and (max-width: 1280px){
+                font-size: 4rem;
+            }
+
+            @media (min-width: 1280px) and (max-width: 1440px){
+                font-size: 6rem !important;
+            }
         }
 
         .redirect{ 
@@ -309,13 +325,41 @@ body{
 }
 
 
+.definition{
+    span{
+        @media (min-width: 1080px) and (max-width: 1440px){
+            font-size: 3rem !important;
+        }
+
+        @media (min-width: 425px) and (max-width: 1080px){
+            font-size: 2rem !important;
+        }
+
+        @media (min-width: 200px) and (max-width: 425px){
+            font-size: 1.5rem !important;
+        }
+    }
+}
+
 
 .question{
     span {
         font-size: 8rem !important;
 
-        @media (max-width: 768px){
+        @media (min-width: 200px) and (max-width: 768px){
             font-size: 2rem !important;
+        }
+
+        @media (min-width: 768px) and (max-width: 1024px){
+            font-size: 4.5rem !important;
+        }
+
+        @media (min-width: 1024px) and (max-width: 1280px){
+            font-size: 5.5rem !important;
+        }
+
+        @media (min-width: 1280px) and (max-width: 1440px){
+            font-size: 6.5rem !important;
         }
     }
 }
@@ -356,14 +400,38 @@ body{
                     font-size: 1.8rem; 
                     font-weight: normal;
 
-                    @media (max-width: 768px){
+                    @media (min-width: 200px) and (max-width: 768px){
                         font-size: 1rem !important;
+                    }
+
+                    @media (min-width: 768px) and (max-width: 1024px){
+                        font-size: 1.1rem !important;
+                    }
+
+                    @media (min-width: 1024px) and (max-width: 1280px){
+                        font-size: 1.3rem !important;
                     }
                 }
             }
 
             & > div:nth-child(1){
                 padding-right: 18rem;
+
+                @media (min-width: 200px) and (max-width: 768px){
+                    padding-right: 1rem !important;
+                }
+
+                @media (min-width: 768px) and (max-width: 1024px){
+                    padding-right: 2.5rem !important;
+                }
+
+                @media (min-width: 1024px) and (max-width: 1280px){
+                    padding-right: 4rem;
+                }
+        
+                @media (min-width: 1280px) and (max-width: 1440px){
+                    padding-right: 6rem;
+                }
 
                 @media (max-width: 768px){
                     padding-right: 15px;
@@ -374,13 +442,29 @@ body{
                 right: 0;
                 padding-left: 18rem;
 
+                @media (min-width: 200px) and (max-width: 768px){
+                    padding-left: 1rem !important;
+                }
+
+                @media (min-width: 768px) and (max-width: 1024px){
+                    padding-left: 2.5rem !important;
+                }
+
+                @media (min-width: 1024px) and (max-width: 1280px){
+                    padding-left: 4rem;
+                }
+        
+                @media (min-width: 1280px) and (max-width: 1440px){
+                    padding-left: 6rem;
+                }
+
                 @media (max-width: 768px){
                     padding-left: 15px;
                 }
             }
 
             & > div:hover{
-                transform: translateY(-50%) scale(1.6);
+                transform: translateY(-50%) scale(1.5);
                 cursor: default;
 
                 span{ 
@@ -393,11 +477,31 @@ body{
 
 
 .thanks{
-    span:nth-child(1){
-        font-size: 8rem;
-    }
-    span:nth-child(2){
-        font-size: 1rem !important;
+
+    & > div{
+        & > span:nth-child(1){
+            /*font-size: 12rem;
+
+            @media (min-width: 200px) and (max-width: 768px){
+                font-size: 4rem;
+            }
+
+            @media (min-width: 768px) and (max-width: 1024px){
+                font-size: 4rem;
+            }
+
+            @media (min-width: 1024px) and (max-width: 1280px){
+                font-size: 4rem;
+            }
+
+            @media (min-width: 1280px) and (max-width: 1440px){
+                font-size: 5rem !important;
+            }*/
+        }
+
+        & > span:nth-child(2){
+            font-size: 1rem !important;
+        }
     }
 }
 
