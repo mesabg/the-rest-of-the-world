@@ -2,7 +2,6 @@
  * Global dependencies
  */
 window.$ = require('jquery');
-const fs = require('fs');
 
 $(document).ready(function($){
     //let mouse = require('file-loader?name=[name].[hash:20].[ext]!./assets/images/mouse.gif');

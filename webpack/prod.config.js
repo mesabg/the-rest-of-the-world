@@ -11,9 +11,9 @@ const { CommonsChunkPlugin } = require('webpack').optimize;
 
 const nodeModules = path.join(process.cwd(), 'node_modules');
 const entryPoints = ["inline","polyfills","sw-register","scripts","styles","vendor","main"];
-const baseHref = "wordpress";
+const baseHref = "";
 const deployUrl = "";
-const loader = require('./loader');
+const loader = require('../loader');
 
 
 

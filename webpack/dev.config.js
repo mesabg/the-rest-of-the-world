@@ -13,7 +13,7 @@ const nodeModules = path.join(process.cwd(), 'node_modules');
 const entryPoints = ["inline","polyfills","sw-register","scripts","styles","vendor","main"];
 const baseHref = "";
 const deployUrl = "";
-const loader = require('./loader');
+const loader = require('../loader');
 
 
 
