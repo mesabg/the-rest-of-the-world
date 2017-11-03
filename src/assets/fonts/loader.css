@@ -1,0 +1,16 @@
+
+@import 'Gilroy-ExtraBold/fonts.css'; 
+@import 'Gilroy-Light/fonts.css'; 
+@import 'Gilroy-Regular/fonts.css'; 
+
+[extra-bold]{
+    font-family: 'Gilroy-ExtraBold';
+}
+
+[light]{
+    font-family: 'Gilroy-Light';
+}
+
+[regular]{
+    font-family: 'Gilroy-Regular';
+}
