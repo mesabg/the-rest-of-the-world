@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --port=6060",
-    "build": "webpack --optimize-max-chunks=true --optimize-min-chunk-size=true --optimize-minimize=true",
+    "start": "webpack-dev-server --port=6060 --config webpack/dev.config.js",
+    "prebuild": "webpack --optimize-max-chunks=true --optimize-min-chunk-size=true --optimize-minimize=true --config webpack/prod.config.js",
+    "build": "node php.js",
     "preprod": "npm run build",
     "prod": "http-serve ./dist -p 6060 -g true"
   },
