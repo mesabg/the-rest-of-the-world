@@ -4,6 +4,7 @@
   "description": "A Pre-Landing",
   "main": "index.js",
   "scripts": {
+    "poststart": "npm install --save --verbose jquery",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --port=6060 --config webpack/dev.config.js",
     "prebuild": "webpack --optimize-max-chunks=true --optimize-min-chunk-size=true --optimize-minimize=true --config webpack/prod.config.js",
